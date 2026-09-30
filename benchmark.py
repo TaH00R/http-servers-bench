@@ -29,6 +29,11 @@ SERVERS = {
         ],
         "run": ["./server"],
     },
+    "Python": {
+    "directory": os.path.join(ROOT,"http-servers-bench", "servers", "python"),
+    "build": None,
+    "run": ["python", "server.py"],
+},
 }
 
 HOST = "127.0.0.1"
@@ -48,6 +53,10 @@ RESULTS_FILE = os.path.join(RESULTS_DIR, "results.csv")
 
 
 def build_server(name, config):
+    if config["build"] is None:
+        print(f"\n[{name}] No build step")
+        return
+
     print(f"\n[{name}] Building...")
 
     result = subprocess.run(
