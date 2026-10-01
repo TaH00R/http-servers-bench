@@ -1,0 +1,30 @@
+{
+    "C": {
+        "tests_completed": 51,
+        "average_requests_per_sec": 67843.05,
+        "average_cpu_percent": 72.5003852669004,
+        "average_peak_memory_mb": 1.7807904411764706,
+        "average_startup_ms": 17.495215176428673
+    },
+    "C++": {
+        "tests_completed": 51,
+        "average_requests_per_sec": 53766.794117647056,
+        "average_cpu_percent": 50.73651236225425,
+        "average_peak_memory_mb": 3.8556985294117645,
+        "average_startup_ms": 16.394187588208723
+    },
+    "JavaScript": {
+        "tests_completed": 51,
+        "average_requests_per_sec": 25083.346078431372,
+        "average_cpu_percent": 98.53944205008736,
+        "average_peak_memory_mb": 79.60232843137256,
+        "average_startup_ms": 131.26258017649997
+    },
+    "Python": {
+        "tests_completed": 51,
+        "average_requests_per_sec": 52671.36294117646,
+        "average_cpu_percent": 63.844049370539736,
+        "average_peak_memory_mb": 10.241498161764707,
+        "average_startup_ms": 71.83344211767583
+    }
+}
