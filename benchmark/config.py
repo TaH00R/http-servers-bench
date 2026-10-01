@@ -81,6 +81,22 @@ SERVERS = {
             "server.js"
         ],
     },
+
+
+    "Java": {
+        "directory": os.path.join(
+            SERVERS_ROOT,
+            "java"
+        ),
+        "build": [
+            "javac",
+            "Server.java"
+        ],
+        "run": [
+            "java",
+            "Server"
+        ],
+    },
 }
 
 
@@ -101,6 +117,7 @@ CONNECTIONS = [
 ]
 
 
+# wrk requires connections >= threads
 TESTS = [
     {
         "threads": threads,

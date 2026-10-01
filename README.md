@@ -10,6 +10,7 @@ the current implementations are:
 - C++
 - Python
 - JavaScript / Node.js
+- Java
 
 more languages can be added later using the same structure.
 
@@ -51,7 +52,9 @@ socket(AF_INET, SOCK_STREAM, 0);
 
 `AF_INET` means that the server is using ipv4 and `SOCK_STREAM` means tcp.
 
-python and node.js expose the same idea through their own socket apis.
+python, node.js and java expose the same idea through their own socket apis.
+
+java uses `ServerSocket` for the listening socket and `Socket` for each client connection.
 
 at this point the socket exists, but it is not attached to a port yet.
 
@@ -355,8 +358,11 @@ http-servers-bench/
 │   ├── python/
 │   │   └── server.py
 │   │
-│   └── javascript/
-│       └── server.js
+│   ├── javascript/
+│   │   └── server.js
+│   │
+│   └── java/
+│       └── Server.java
 │
 ├── benchmark/
 │   ├── benchmark.py
@@ -388,6 +394,14 @@ the expected response is:
 
 ```text
 hello world!
+```
+
+for java, compile and run the server with:
+
+```bash
+cd servers/java
+javac Server.java
+java Server
 ```
 
 ## a note about the benchmark
