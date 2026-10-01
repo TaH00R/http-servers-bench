@@ -1,29 +1,38 @@
 #include <arpa/inet.h>
-#include <errno.h>
+#include <signal.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
-#include <time.h>
+#include <netinet/tcp.h>
 #include <unistd.h>
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 4096
 #define PORT 8081
-
+#define BACKLOG 4096
 
 int main() {
     char buffer[BUFFER_SIZE];
 
+    /*
+     * Ignore SIGPIPE.
+     *
+     * This can happen when a client disconnects before
+     * we finish sending the response.
+     */
+    signal(SIGPIPE, SIG_IGN);
+
     // HTTP response
-    char resp[] = "HTTP/1.1 200 OK\r\n"
-                  "Server: webserver-c\r\n"
-                  "Content-Type: text/plain\r\n"
-                  "Content-Length: 12\r\n"
-                  "Connection: close\r\n"
-                  "\r\n"
-                  "Hello World!";
+    // Keep this exactly the same across all servers
+    const char resp[] =
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Type: text/plain\r\n"
+        "Content-Length: 13\r\n"
+        "Connection: close\r\n"
+        "\r\n"
+        "Hello World!\n";
 
     // Creating the socket
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0); // * socket(domain, type, protocol)
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
     /*
      * AF_INET -> IPv4 protocols
@@ -34,100 +43,101 @@ int main() {
         return 1;
     }
 
-    printf("socket created successfully\n");
-
-    // Setting socket options (basically allowing the socket to be reused)
+    // Allow the server to reuse the address after restarting
     int opt = 1;
 
-    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+    if (setsockopt(
+        sockfd,
+        SOL_SOCKET,
+        SO_REUSEADDR,
+        &opt,
+        sizeof(opt)
+    ) < 0) {
         perror("webserver (setsockopt)");
+        close(sockfd);
         return 1;
     }
 
     // Creating a Binding Address for the socket
-    struct sockaddr_in host_addr; // * Address structure for the host (IPv4)
-    socklen_t host_addrlen = sizeof(host_addr); // * Size of the address structure (sockaddr_in)
-
-    // Create client address
+    struct sockaddr_in host_addr = {};
     struct sockaddr_in client_addr;
+
+    socklen_t host_addrlen = sizeof(host_addr);
     socklen_t client_addrlen = sizeof(client_addr);
 
-    host_addr.sin_family = AF_INET; // * IPv4 Family Address (always set to AF_INET)
-    host_addr.sin_port = htons(PORT); // * Host Port Number (htons converts the port number to network byte order)
-    host_addr.sin_addr.s_addr = htonl(INADDR_ANY); // * Host Interface Address
+    host_addr.sin_family = AF_INET;
+    host_addr.sin_port = htons(PORT);
+    host_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    // Binding the socket to the address (if not obvious)
-    if (bind(sockfd, (struct sockaddr *)&host_addr, host_addrlen) != 0) {
+    // Binding the socket to the address
+    if (bind(
+        sockfd,
+        (struct sockaddr *)&host_addr,
+        host_addrlen
+    ) != 0) {
         perror("webserver (bind)");
+        close(sockfd);
         return 1;
     }
 
-    printf("socket successfully bound to address\n");
-
-    // Listen to Incoming Connections
-    if (listen(sockfd, SOMAXCONN) != 0) {
-
-        //* listen(socket, backlog), SOMAXCONN -> Maximum number of connections
+    // Start listening for incoming connections
+    // Use the same backlog in every language
+    if (listen(sockfd, BACKLOG) != 0) {
         perror("webserver (listen)");
+        close(sockfd);
         return 1;
     }
 
-    printf("server listening for connections\n");
+    printf("C server listening on port %d\n", PORT);
 
     for (;;) {
 
-        // Accept incoming connections
+        // Reset the client address length before every accept
         client_addrlen = sizeof(client_addr);
 
+        // Accept an incoming connection
         int newsockfd = accept(
             sockfd,
             (struct sockaddr *)&client_addr,
             &client_addrlen
         );
 
-        // * accept(socket, address, address_length) -> returns a new socket descriptor for the accepted connection
         if (newsockfd < 0) {
-            perror("webserver (accept)");
             continue;
         }
 
-        // Read from the socket
-        ssize_t valread = read(newsockfd, buffer, BUFFER_SIZE - 1);
+        // Disable Nagle's algorithm for the client connection
+        int tcp_nodelay = 1;
 
-        if (valread < 0) {
-            perror("webserver (read)");
-            close(newsockfd);
-            continue;
+        setsockopt(
+            newsockfd,
+            IPPROTO_TCP,
+            TCP_NODELAY,
+            &tcp_nodelay,
+            sizeof(tcp_nodelay)
+        );
+
+        // Read the HTTP request
+        ssize_t valread = read(
+            newsockfd,
+            buffer,
+            BUFFER_SIZE - 1
+        );
+
+        if (valread > 0) {
+
+            // Send the fixed HTTP response
+            ssize_t valwrite = write(
+                newsockfd,
+                resp,
+                strlen(resp)
+            );
+
+            // Ignore failed sends caused by a disconnected client
+            (void)valwrite;
         }
 
-        buffer[valread] = '\0';
-
-        // Read the request
-        char method[BUFFER_SIZE];
-        char uri[BUFFER_SIZE];
-        char version[BUFFER_SIZE];
-
-        if (sscanf(buffer, "%1023s %1023s %1023s", method, uri, version) == 3) {
-
-            // Request logging disabled during benchmarking
-            // printf("[%s:%u] %s %s %s\n",
-            //        inet_ntoa(client_addr.sin_addr),
-            //        ntohs(client_addr.sin_port),
-            //        method,
-            //        version,
-            //        uri);
-        }
-
-        // Write to the socket
-        size_t response_length = strlen(resp);
-        ssize_t valwrite = write(newsockfd, resp, response_length);
-
-        if (valwrite < 0) {
-            perror("webserver (write)");
-            close(newsockfd);
-            continue;
-        }
-
+        // Close the connection after one request
         close(newsockfd);
     }
 
