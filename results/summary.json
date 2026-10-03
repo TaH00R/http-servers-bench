@@ -1,37 +1,44 @@
 {
     "C": {
-        "tests_completed": 21,
-        "average_requests_per_sec": 63404.00285714286,
-        "average_cpu_percent": 61.46046110325318,
-        "average_peak_memory_mb": 1.7790178571428572,
-        "average_startup_ms": 16.899535857126985
+        "tests_completed": 51,
+        "average_requests_per_sec": 59738.00843137255,
+        "average_cpu_percent": 71.58034478741992,
+        "average_peak_memory_mb": 1.7794117647058822,
+        "average_startup_ms": 15.778016000009597
     },
     "C++": {
-        "tests_completed": 21,
-        "average_requests_per_sec": 54628.25428571429,
-        "average_cpu_percent": 61.453495520980674,
-        "average_peak_memory_mb": 3.904017857142857,
-        "average_startup_ms": 16.90970871439796
+        "tests_completed": 51,
+        "average_requests_per_sec": 71046.77607843137,
+        "average_cpu_percent": 70.64031003688604,
+        "average_peak_memory_mb": 3.9161305147058822,
+        "average_startup_ms": 18.39109676467722
+    },
+    "Go": {
+        "tests_completed": 51,
+        "average_requests_per_sec": 42961.90745098039,
+        "average_cpu_percent": 93.17444806833625,
+        "average_peak_memory_mb": 10.479013480392156,
+        "average_startup_ms": 69.1145654705799
     },
     "Java": {
-        "tests_completed": 21,
-        "average_requests_per_sec": 43973.69190476191,
-        "average_cpu_percent": 75.70247147571901,
-        "average_peak_memory_mb": 126.57254464285714,
-        "average_startup_ms": 65.58742928570739
+        "tests_completed": 51,
+        "average_requests_per_sec": 57238.99568627451,
+        "average_cpu_percent": 82.06497631147198,
+        "average_peak_memory_mb": 127.43650428921569,
+        "average_startup_ms": 71.55333141179868
     },
     "JavaScript": {
-        "tests_completed": 21,
-        "average_requests_per_sec": 18540.66904761905,
-        "average_cpu_percent": 98.55821122112212,
-        "average_peak_memory_mb": 78.11290922619048,
-        "average_startup_ms": 144.86562357147446
+        "tests_completed": 51,
+        "average_requests_per_sec": 22500.233725490194,
+        "average_cpu_percent": 98.66274587458746,
+        "average_peak_memory_mb": 79.51830575980392,
+        "average_startup_ms": 142.20109276461432
     },
     "Python": {
-        "tests_completed": 21,
-        "average_requests_per_sec": 41683.28380952381,
-        "average_cpu_percent": 76.78107496463933,
-        "average_peak_memory_mb": 10.307477678571429,
-        "average_startup_ms": 90.2897168571144
+        "tests_completed": 51,
+        "average_requests_per_sec": 53351.44882352941,
+        "average_cpu_percent": 82.66446564345017,
+        "average_peak_memory_mb": 10.279641544117647,
+        "average_startup_ms": 81.39635805880917
     }
 }

@@ -97,6 +97,23 @@ SERVERS = {
             "Server"
         ],
     },
+    
+        "Go": {
+        "directory": os.path.join(
+            SERVERS_ROOT,
+            "go"
+        ),
+        "build": [
+            "go",
+            "build",
+            "-o",
+            "server",
+            "server.go"
+        ],
+        "run": [
+            "./server"
+        ],
+    },
 }
 
 

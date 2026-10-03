@@ -11,6 +11,7 @@ the current implementations are:
 - Python
 - JavaScript / Node.js
 - Java
+- GoLang
 
 more languages can be added later using the same structure.
 
